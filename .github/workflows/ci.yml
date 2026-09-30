@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: iqrafi
+          POSTGRES_PASSWORD: iqrafi
+          POSTGRES_DB: iqrafi
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U iqrafi" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://iqrafi:iqrafi@localhost:5432/iqrafi
+      TEST_DATABASE_URL: postgresql://iqrafi:iqrafi@localhost:5432/iqrafi_test
+      APP_URL: http://localhost:3000
+      CRON_SECRET: ci-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: PGPASSWORD=iqrafi psql -h localhost -U iqrafi -d iqrafi -c "create database iqrafi_test"
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run quran:validate
+      - run: npm test
+      - run: npm run db:setup
+      - run: npm run build
+      - name: End-to-end journey
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:e2e

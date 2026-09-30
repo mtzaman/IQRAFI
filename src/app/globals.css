@@ -1,0 +1,266 @@
+@import "tailwindcss";
+
+/*
+ * IQRAFI design tokens.
+ * Semantic colour variables switch with the theme; components only use these tokens
+ * (bg-surface, text-muted, border-line, …) — never raw hex values.
+ */
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+  /* Brand palette */
+  --emerald-950: #06201a;
+  --emerald-900: #0a3f30; /* dark forest green */
+  --emerald-800: #0f5c45; /* deep emerald */
+  --emerald-700: #14704f;
+  --emerald-100: #dcebe3;
+  --emerald-50: #eef5f1;
+  --sand-50: #faf7f0; /* warm off-white */
+  --sand-100: #f3eee3;
+  --sand-200: #e9e0cc; /* soft sand */
+  --gold-500: #b08d3c; /* subtle gold */
+  --gold-700: #7a5e1f;
+  --charcoal: #1f2623;
+  --grey-600: #56605b;
+
+  /* Semantic (light) */
+  --bg: var(--sand-50);
+  --surface: #ffffff;
+  --surface-2: var(--sand-100);
+  --text: var(--charcoal);
+  --muted: var(--grey-600);
+  --line: #e4ddcf;
+  --primary: var(--emerald-800);
+  --primary-hover: var(--emerald-900);
+  --on-primary: #ffffff;
+  --primary-soft: var(--emerald-50);
+  --primary-soft-text: var(--emerald-900);
+  --accent: var(--gold-500);
+  --accent-text: var(--gold-700);
+  --danger: #a33a2b;
+  --danger-soft: #f8e9e6;
+  --focus: #0f5c45;
+  --shadow: 0 1px 2px rgb(31 38 35 / 0.04), 0 8px 24px rgb(31 38 35 / 0.06);
+
+  /* Reader page themes */
+  --page-bg: #fffdf8;
+  --page-text: #14201b;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --bg: #0a1512; /* near-black green */
+  --surface: #10201b;
+  --surface-2: #152a23;
+  --text: #f3eee3; /* warm white */
+  --muted: #a9b5ae;
+  --line: #22382f;
+  --primary: #6fcba6;
+  --primary-hover: #8ad8b7;
+  --on-primary: #06140f;
+  --primary-soft: #16352b;
+  --primary-soft-text: #bfe8d5;
+  --accent: #c9a95a;
+  --accent-text: #d9bd78;
+  --danger: #f08a7a;
+  --danger-soft: #3a1c17;
+  --focus: #8ad8b7;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.25);
+  --page-bg: #0d1a16;
+  --page-text: #efe9dc;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) {
+    --bg: #0a1512;
+    --surface: #10201b;
+    --surface-2: #152a23;
+    --text: #f3eee3;
+    --muted: #a9b5ae;
+    --line: #22382f;
+    --primary: #6fcba6;
+    --primary-hover: #8ad8b7;
+    --on-primary: #06140f;
+    --primary-soft: #16352b;
+    --primary-soft-text: #bfe8d5;
+    --accent: #c9a95a;
+    --accent-text: #d9bd78;
+    --danger: #f08a7a;
+    --danger-soft: #3a1c17;
+    --focus: #8ad8b7;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.25);
+    --page-bg: #0d1a16;
+    --page-text: #efe9dc;
+    color-scheme: dark;
+  }
+}
+
+/* Reader page themes are independent of the app theme. */
+[data-reader-theme="light"] {
+  --page-bg: #fffdf8;
+  --page-text: #14201b;
+  --page-muted: #56605b;
+  --page-line: #e8e1d3;
+}
+[data-reader-theme="sepia"] {
+  --page-bg: #f4ecd8;
+  --page-text: #3b2f1e;
+  --page-muted: #6e5b3e;
+  --page-line: #e0d2b2;
+}
+[data-reader-theme="dark"] {
+  --page-bg: #0d1a16;
+  --page-text: #efe9dc;
+  --page-muted: #a9b5ae;
+  --page-line: #22382f;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-on-primary: var(--on-primary);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-soft-text: var(--primary-soft-text);
+  --color-accent: var(--accent);
+  --color-accent-text: var(--accent-text);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-page: var(--page-bg);
+  --color-page-text: var(--page-text);
+  --color-page-muted: var(--page-muted);
+  --color-page-line: var(--page-line);
+
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-arabic: "Noto Naskh Arabic", "Inter Variable", ui-sans-serif, serif;
+  --font-urdu: "Noto Nastaliq Urdu", "Noto Naskh Arabic", serif;
+  --font-quran: "Amiri Quran", "Noto Naskh Arabic", serif;
+
+  --radius-card: 1.25rem;
+  --radius-control: 0.875rem;
+  --shadow-soft: var(--shadow);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  html[lang="ar"] body {
+    font-family: var(--font-arabic), var(--font-sans);
+  }
+  html[lang="ur"] body {
+    font-family: var(--font-urdu), var(--font-sans);
+    line-height: 1.9;
+  }
+  :focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 25%, transparent);
+  }
+}
+
+/* Qur'anic text: dedicated typeface, generous spacing, always RTL. */
+.quran-text {
+  font-family: var(--font-quran);
+  direction: rtl;
+  line-height: 2.4;
+  word-spacing: 0.05em;
+  font-feature-settings: "kern", "liga", "calt";
+}
+
+.ayah-marker {
+  font-family: var(--font-quran);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.9em;
+  height: 1.9em;
+  margin-inline: 0.2em;
+  border: 1px solid color-mix(in oklab, var(--accent) 70%, transparent);
+  border-radius: 999px;
+  font-size: 0.55em;
+  vertical-align: middle;
+  color: var(--page-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes iqrafi-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.animate-fade-in {
+  animation: iqrafi-fade-in 400ms ease-out both;
+}
+
+@keyframes iqrafi-shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, color-mix(in oklab, var(--surface-2) 60%, var(--surface)) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: iqrafi-shimmer 1.6s ease-in-out infinite;
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Reader layout modes */
+.reader-translation {
+  display: none;
+}
+[data-translation="on"] .reader-flow {
+  text-align: start;
+}
+[data-translation="on"] .reader-ayah {
+  display: block;
+  padding-block: 1rem;
+  border-bottom: 1px solid var(--page-line);
+}
+[data-translation="on"] .reader-translation {
+  display: block;
+  margin-top: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.7;
+  text-align: left;
+  color: var(--page-text);
+}

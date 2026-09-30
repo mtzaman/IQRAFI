@@ -6,7 +6,7 @@
  * transaction observes "all 30 Juz complete" and finalises the Khatma.
  */
 import { and, asc, eq, inArray, max, ne, sql } from "drizzle-orm";
-import { db, type DbOrTx, type Tx } from "@/lib/db";
+import { db, type Tx } from "@/lib/db";
 import { assignmentEvents, assignments, groups, khatmas } from "@/lib/db/schema";
 import { distributeJuz, distributeSubset, JUZ_NUMBERS, verifyDistribution } from "@/lib/khatma/engine";
 import { dateInTimezone, dueDateFor } from "@/lib/khatma/schedule";
