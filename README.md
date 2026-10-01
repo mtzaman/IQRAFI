@@ -108,6 +108,13 @@ Testers extract it and double-click `IQRAFI.exe`; no Node.js or PostgreSQL insta
 - The build cross-compiles from Linux/macOS too, or run the **Windows demo package** GitHub workflow.
 - The exe is unsigned, so Windows SmartScreen shows a warning. Sign it before wider distribution.
 
+## Deploying to cPanel / your own Node.js hosting
+
+Run the **Server package** GitHub workflow (or `npm run deploy:package` on Linux) and follow
+[docs/DEPLOY-CPANEL.md](docs/DEPLOY-CPANEL.md). With `IQRAFI_AUTO_MIGRATE=1` the app applies
+migrations and loads the Qur'an on start, so no terminal is needed. `IQRAFI_ADMIN_EMAIL` grants
+admin to an existing account.
+
 ## Deployment (e.g. Vercel + Supabase)
 
 1. Create a Supabase project and use its Postgres connection string as `DATABASE_URL`.

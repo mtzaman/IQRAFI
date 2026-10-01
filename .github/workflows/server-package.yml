@@ -1,0 +1,21 @@
+name: Server package (cPanel / Node.js hosting)
+
+# Builds an upload-ready IQRAFI server package for Linux Node.js hosting (e.g. cPanel "Setup Node.js App").
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run deploy:package
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IQRAFI-server-linux-x64
+          path: dist/IQRAFI-server-linux-x64.zip

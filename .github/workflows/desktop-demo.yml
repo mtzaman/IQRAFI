@@ -19,3 +19,5 @@ jobs:
         with:
           name: IQRAFI-Demo-win-x64
           path: dist/IQRAFI-Demo/
+          # The app's build output lives in the hidden "app/.next" folder; it must be included.
+          include-hidden-files: true

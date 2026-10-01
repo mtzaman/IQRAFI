@@ -27,7 +27,8 @@
     "stats:refresh": "tsx scripts/refresh-stats.ts",
     "admin:grant": "tsx scripts/grant-admin.ts",
     "check": "npm run lint && npm run typecheck && npm run quran:validate && npm test",
-    "desktop:build": "node scripts/desktop/build-windows.mjs"
+    "desktop:build": "node scripts/desktop/build-windows.mjs",
+    "deploy:package": "node scripts/deploy/build-node-package.mjs"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.8",

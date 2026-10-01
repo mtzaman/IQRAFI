@@ -113,8 +113,8 @@ function openBrowser(url) {
 }
 
 async function main() {
-  if (!fs.existsSync(path.join(appDir, "server.js"))) {
-    console.error(`Could not find the IQRAFI app folder next to this program:\n  ${appDir}\nPlease keep IQRAFI.exe and the "app" folder together.`);
+  if (!fs.existsSync(path.join(appDir, "server.js")) || !fs.existsSync(path.join(appDir, ".next", "BUILD_ID"))) {
+    console.error(`Could not find the IQRAFI app folder next to this program:\n  ${appDir}\nPlease keep IQRAFI.exe and the complete "app" folder (including its hidden ".next" folder) together.`);
     return pause(1);
   }
   if (process.argv.includes("--reset")) {
