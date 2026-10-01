@@ -13,6 +13,7 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { materializeSymlinks } from "../lib/materialize-links.mjs";
 
 const root = path.resolve(import.meta.dirname, "../..");
 const dist = path.join(root, "dist");
@@ -31,7 +32,10 @@ if (!process.argv.includes("--skip-build")) {
 log("Assembling the package");
 fs.rmSync(out, { recursive: true, force: true });
 fs.mkdirSync(out, { recursive: true });
-fs.cpSync(path.join(root, ".next/standalone"), app, { recursive: true });
+// dereference: the build links external packages (pg, pglite, argon2) via symlinks in .next/node_modules,
+// which zip files and Windows do not preserve. Copy the real files instead.
+fs.cpSync(path.join(root, ".next/standalone"), app, { recursive: true, dereference: true });
+console.log(`Replaced ${materializeSymlinks(app)} symlinked packages with real files`);
 fs.cpSync(path.join(root, ".next/static"), path.join(app, ".next/static"), { recursive: true });
 fs.cpSync(path.join(root, "data/quran"), path.join(app, "data/quran"), { recursive: true });
 fs.cpSync(path.join(root, "drizzle"), path.join(app, "drizzle"), { recursive: true });

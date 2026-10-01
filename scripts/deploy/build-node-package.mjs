@@ -11,6 +11,7 @@
 import { execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
+import { materializeSymlinks } from "../lib/materialize-links.mjs";
 
 const root = path.resolve(import.meta.dirname, "../..");
 const dist = path.join(root, "dist");
@@ -23,7 +24,9 @@ if (!process.argv.includes("--skip-build")) {
 }
 
 fs.rmSync(out, { recursive: true, force: true });
-fs.cpSync(path.join(root, ".next/standalone"), out, { recursive: true });
+// dereference: external packages are symlinked from .next/node_modules; uploads and zips must contain real files.
+fs.cpSync(path.join(root, ".next/standalone"), out, { recursive: true, dereference: true });
+console.log(`Replaced ${materializeSymlinks(out)} symlinked packages with real files`);
 fs.cpSync(path.join(root, ".next/static"), path.join(out, ".next/static"), { recursive: true });
 fs.cpSync(path.join(root, "data/quran"), path.join(out, "data/quran"), { recursive: true });
 fs.cpSync(path.join(root, "drizzle"), path.join(out, "drizzle"), { recursive: true });
