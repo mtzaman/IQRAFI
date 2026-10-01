@@ -40,16 +40,23 @@ function banner(lines) {
   log("=".repeat(width) + "\n");
 }
 
-function freePort(start) {
+/** "::" listens on IPv6 and IPv4 together, so "localhost" works whichever one Windows picks. */
+function canListen(host, port) {
   return new Promise((resolve) => {
-    const tryPort = (port) => {
-      const srv = net.createServer();
-      srv.once("error", () => tryPort(port + 1));
-      srv.once("listening", () => srv.close(() => resolve(port)));
-      srv.listen(port, "0.0.0.0");
-    };
-    tryPort(start);
+    const srv = net.createServer();
+    srv.once("error", () => resolve(false));
+    srv.once("listening", () => srv.close(() => resolve(true)));
+    srv.listen(port, host);
   });
+}
+
+async function chooseHostAndPort(start) {
+  const host = (await canListen("::", 0)) ? "::" : "0.0.0.0";
+  for (let port = start; port < start + 50; port++) {
+    // The port must be free on every address the browser might use.
+    if ((await canListen(host, port)) && (await canListen("127.0.0.1", port))) return { host, port };
+  }
+  throw new Error("No free port found between 3000 and 3049");
 }
 
 function lanAddress() {
@@ -126,16 +133,17 @@ async function main() {
   fs.writeFileSync(logFile, `IQRAFI demo log — ${new Date().toISOString()}\n`);
   const firstRun = !fs.existsSync(dbDir);
 
-  const port = await freePort(3000);
+  const { host, port } = await chooseHostAndPort(3000);
   const lan = lanAddress();
-  const localUrl = `http://localhost:${port}`;
+  // 127.0.0.1 always reaches the server; "localhost" can resolve to IPv6 first on Windows.
+  const localUrl = `http://127.0.0.1:${port}`;
   const networkUrl = lan ? `http://${lan}:${port}` : null;
 
   Object.assign(process.env, {
     NODE_ENV: "production",
     IQRAFI_DEMO: "1",
     PORT: String(port),
-    HOSTNAME: "0.0.0.0",
+    HOSTNAME: host,
     DATABASE_URL: `pglite:${dbDir}`,
     // Invitation links use the network address so other people on the same Wi-Fi can open them.
     APP_URL: networkUrl || localUrl,

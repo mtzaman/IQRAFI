@@ -16,7 +16,8 @@ HOW TO START
 IF THE BROWSER DOES NOT OPEN
   Wait until the black window says "IQRAFI is running", then either
   - double-click "Open IQRAFI in browser" in the IQRAFI-Demo folder, or
-  - open Chrome/Edge yourself and go to  http://localhost:3000
+  - open Chrome/Edge yourself and go to  http://127.0.0.1:3000
+    (type the :3000 part — plain "localhost" opens Windows' own web server, IIS, if it is on)
   (If port 3000 was busy, the black window shows a different number, e.g. :3001.)
   If the black window shows an error, send the log file:
   %LOCALAPPDATA%\IQRAFI-Demo\iqrafi.log
