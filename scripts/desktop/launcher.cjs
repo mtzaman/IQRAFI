@@ -19,11 +19,25 @@ const appDir = path.join(baseDir, "app");
 const dataRoot = path.join(process.env.LOCALAPPDATA || baseDir, "IQRAFI-Demo");
 const dbDir = path.join(dataRoot, "database");
 
+// Everything shown in the window is also written to a log file, to help with troubleshooting.
+let logFile = null;
+function log(...parts) {
+  const line = parts.join(" ");
+  console.log(line);
+  if (logFile) {
+    try {
+      fs.appendFileSync(logFile, line + "\n");
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
 function banner(lines) {
   const width = Math.max(...lines.map((l) => l.length)) + 4;
-  console.log("\n" + "=".repeat(width));
-  for (const l of lines) console.log("  " + l);
-  console.log("=".repeat(width) + "\n");
+  log("\n" + "=".repeat(width));
+  for (const l of lines) log("  " + l);
+  log("=".repeat(width) + "\n");
 }
 
 function freePort(start) {
@@ -62,13 +76,40 @@ function waitUntilReady(port, timeoutMs) {
   });
 }
 
+/**
+ * Opens the default browser. Tries several Windows mechanisms in turn, because which one
+ * works can depend on the Windows version and security settings.
+ */
 function openBrowser(url) {
-  const cmd = process.platform === "win32" ? ["cmd", ["/c", "start", "", url]] : process.platform === "darwin" ? ["open", [url]] : ["xdg-open", [url]];
-  try {
-    spawn(cmd[0], cmd[1], { detached: true, stdio: "ignore" }).unref();
-  } catch {
-    /* the URL is printed in the window as well */
-  }
+  const attempts =
+    process.platform === "win32"
+      ? [
+          ["rundll32.exe", ["url.dll,FileProtocolHandler", url]],
+          ["explorer.exe", [url]],
+          ["cmd.exe", ["/d", "/s", "/c", `start "" "${url}"`], { windowsVerbatimArguments: true }],
+        ]
+      : process.platform === "darwin"
+        ? [["open", [url]]]
+        : [["xdg-open", [url]]];
+  const tryNext = (i) => {
+    if (i >= attempts.length) {
+      log(`Could not open a browser automatically. Please open ${url} yourself.`);
+      return;
+    }
+    const [cmd, args, extra] = attempts[i];
+    try {
+      const child = spawn(cmd, args, { stdio: "ignore", windowsHide: true, ...extra });
+      child.once("error", (e) => {
+        log(`  (browser via ${cmd} failed: ${e.message})`);
+        tryNext(i + 1);
+      });
+      child.unref();
+    } catch (e) {
+      log(`  (browser via ${cmd} failed: ${e.message})`);
+      tryNext(i + 1);
+    }
+  };
+  tryNext(0);
 }
 
 async function main() {
@@ -81,6 +122,8 @@ async function main() {
     console.log("Demo database reset. It will be recreated with fresh demo data.");
   }
   fs.mkdirSync(dataRoot, { recursive: true });
+  logFile = path.join(dataRoot, "iqrafi.log");
+  fs.writeFileSync(logFile, `IQRAFI demo log — ${new Date().toISOString()}\n`);
   const firstRun = !fs.existsSync(dbDir);
 
   const port = await freePort(3000);
@@ -110,10 +153,18 @@ async function main() {
   process.chdir(appDir);
   createRequire(path.join(appDir, "server.js"))("./server.js");
 
+  // Mirror server errors into the log file as well.
+  const origError = console.error;
+  console.error = (...a) => {
+    origError(...a);
+    if (logFile) try { fs.appendFileSync(logFile, a.map(String).join(" ") + "\n"); } catch { /* ignore */ }
+  };
+
   try {
     await waitUntilReady(port, 5 * 60_000);
   } catch (e) {
     console.error(String(e));
+    log(`See the log file for details: ${logFile}`);
     return pause(1);
   }
   banner([
@@ -129,6 +180,9 @@ async function main() {
     "",
     "Data is stored in: " + dbDir,
     'To start over with fresh demo data, run:  IQRAFI.exe --reset',
+    "",
+    "Opening your browser... If it does not open, type this into your browser:",
+    "    " + localUrl,
   ]);
   openBrowser(localUrl);
 }
@@ -140,6 +194,6 @@ function pause(code) {
 }
 
 main().catch((e) => {
-  console.error("IQRAFI could not start:", e);
+  log("IQRAFI could not start: " + (e && e.stack ? e.stack : String(e)));
   pause(1);
 });

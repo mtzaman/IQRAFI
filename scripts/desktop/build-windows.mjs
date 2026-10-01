@@ -79,6 +79,8 @@ removeAuthenticodeSignature(exe);
 run(`npx postject "${exe}" NODE_SEA_BLOB "${blob}" --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2 --overwrite`);
 
 fs.copyFileSync(path.join(root, "scripts/desktop/README-TESTERS.txt"), path.join(out, "README-TESTERS.txt"));
+// Fallback for when the browser does not open automatically (double-click opens the default browser).
+fs.writeFileSync(path.join(out, "Open IQRAFI in browser.url"), "[InternetShortcut]\r\nURL=http://localhost:3000/\r\n");
 
 log("Zipping");
 const zip = path.join(dist, "IQRAFI-Demo-win-x64.zip");
