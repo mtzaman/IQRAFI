@@ -32,7 +32,8 @@ export async function startSession(userId: string) {
   (await cookies()).set(SESSION_COOKIE, token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    // The offline demo is served over plain http on the local network, so it cannot use Secure cookies.
+    secure: process.env.NODE_ENV === "production" && process.env.IQRAFI_DEMO !== "1",
     path: "/",
     expires: new Date(Date.now() + SESSION_DURATION_MS),
   });

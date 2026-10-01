@@ -6,7 +6,12 @@ export default async function globalSetup() {
   const url = process.env.DATABASE_URL;
   if (!url) return;
   const client = new Client({ connectionString: url });
-  await client.connect();
-  await client.query("delete from rate_limits where key like 'signup:%' or key like 'login:%'");
-  await client.end();
+  try {
+    await client.connect();
+    await client.query("delete from rate_limits where key like 'signup:%' or key like 'login:%'");
+  } catch {
+    // The server under test may use another database (e.g. the embedded demo database).
+  } finally {
+    await client.end().catch(() => undefined);
+  }
 }

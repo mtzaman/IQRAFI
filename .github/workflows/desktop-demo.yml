@@ -1,0 +1,21 @@
+name: Windows demo package
+
+# Builds dist/IQRAFI-Demo-win-x64.zip (IQRAFI.exe + embedded demo database) on Windows.
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run desktop:build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IQRAFI-Demo-win-x64
+          path: dist/IQRAFI-Demo/

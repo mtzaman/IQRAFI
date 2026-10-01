@@ -94,6 +94,20 @@ The Discover page labels demo data.
 | `npm run stats:refresh` | Reconcile global statistics |
 | `npm run quran:build` / `quran:validate` | Rebuild / verify the Qur'an dataset |
 
+## Windows demo package (for testers)
+
+`npm run desktop:build` produces `dist/IQRAFI-Demo-win-x64.zip`: `IQRAFI.exe` plus an `app` folder.
+Testers extract it and double-click `IQRAFI.exe`; no Node.js or PostgreSQL install is needed.
+
+- The exe is a Node.js single executable application that starts the bundled Next.js server
+  (`output: "standalone"`) with an **embedded PostgreSQL (PGlite)** database
+  (`DATABASE_URL=pglite:<dir>`). On first start it applies the same migrations and seeds the verified
+  Qur'an and the labelled demo data (`IQRAFI_DEMO=1`, see `src/instrumentation.ts`).
+- Data lives in `%LOCALAPPDATA%\IQRAFI-Demo`; `IQRAFI.exe --reset` starts over.
+- People on the same network can join using the address the launcher prints.
+- The build cross-compiles from Linux/macOS too, or run the **Windows demo package** GitHub workflow.
+- The exe is unsigned, so Windows SmartScreen shows a warning. Sign it before wider distribution.
+
 ## Deployment (e.g. Vercel + Supabase)
 
 1. Create a Supabase project and use its Postgres connection string as `DATABASE_URL`.

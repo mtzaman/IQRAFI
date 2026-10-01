@@ -12,7 +12,9 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   // Native password hashing module must stay on the server and out of the bundle.
-  serverExternalPackages: ["@node-rs/argon2"],
+  serverExternalPackages: ["@node-rs/argon2", "@electric-sql/pglite"],
+  // Self-contained server bundle for the Windows demo package (scripts/desktop).
+  output: process.env.IQRAFI_STANDALONE === "1" ? "standalone" : undefined,
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
